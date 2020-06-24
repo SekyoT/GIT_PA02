@@ -1,25 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     private CharacterController thisController;
     [SerializeField] private float JumpValue = 10;
     [SerializeField] private float Gravity = 10;
-
+    public GameObject Explosion;
     private bool Jump = false;
     private Vector3 MoveDirection = Vector3.zero;
     private Transform playerMesh = null;
     private Animator thisAnimator = null;
 
+    public Text Score;
+    public int scoreplus;
+
+    public Text LivesMinus;
+    
     private float moveSpeed = 0.05f;
+
+    public int Lives = 3;
 
     void Start()
     {
         thisController = GetComponent<CharacterController>();
         thisAnimator = GetComponentInChildren<Animator>();
         playerMesh = transform.GetChild(0);
+        
     }
 
     void Update()
@@ -54,4 +63,25 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, -1.5f, 1.5f), transform.position.y, transform.position.z);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Obstacle")
+        {
+            Lives -= 1;
+            LivesMinus.text = "LIVES : " + Lives;
+            Instantiate(Explosion, transform.position, Quaternion.identity);
+            if (Lives == 0)
+            {
+                SceneManager.LoadScene(1);
+            }
+        }
+
+        if(other.gameObject.tag == "Score")
+        {
+            scoreplus += 10;
+            Score.text = "SCORE : " + scoreplus;
+        }
+    }
+
+    
 }
